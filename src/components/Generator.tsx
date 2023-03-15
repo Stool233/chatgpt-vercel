@@ -177,7 +177,7 @@ export default function (props: { prompts: PromptItem[] }) {
         messages: setting().continuousDialogue
           ? [...messageList().slice(0, -1), message]
           : [message],
-        key: setting().openaiAPIKey,
+        key: setting().whoAreYou,
         temperature: setting().openaiAPITemperature / 100
       }),
       signal: controller.signal

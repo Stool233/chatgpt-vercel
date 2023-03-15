@@ -5,26 +5,33 @@ import {
   ReconnectInterval
 } from "eventsource-parser"
 
-const localEnv = import.meta.env.OPENAI_API_KEY
-const vercelEnv = process.env.OPENAI_API_KEY
+const localEnvApiKey = import.meta.env.OPENAI_API_KEY
+const vercelEnvApiKey = process.env.OPENAI_API_KEY
+const localEnvWhoAreYou = import.meta.env.WHO_ARE_YOU
+const vercelEnvWhoAreYou = process.env.WHO_ARE_YOU
 
-const apiKeys = ((localEnv || vercelEnv)?.split(/\s*\|\s*/) ?? []).filter(
+const apiKeys = ((localEnvApiKey || vercelEnvApiKey)?.split(/\s*\|\s*/) ?? []).filter(
   Boolean
 )
+const whoAreYou = localEnvWhoAreYou || vercelEnvWhoAreYou
+
 
 export const post: APIRoute = async context => {
   const body = await context.request.json()
   const apiKey = apiKeys.length
     ? apiKeys[Math.floor(Math.random() * apiKeys.length)]
     : ""
-  let { messages, key = apiKey, temperature = 0.6 } = body
+  let { messages, key, temperature = 0.6 } = body
 
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
-  if (!key.startsWith("sk-")) key = apiKey
+  if (key === whoAreYou) {
+    key = apiKey
+  }
+  
   if (!key) {
-    return new Response("没有填写 OpenAI API key")
+    return new Response("很抱歉，我不能为你提供服务")
   }
   if (!messages) {
     return new Response("没有输入任何文字")
